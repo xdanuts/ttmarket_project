@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+from decouple import config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,7 +21,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'e7q2oec_)8n1eh9x6%n1xky#sdm_4-&roz4s&retx@y9(pdk*+'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -82,11 +83,11 @@ WSGI_APPLICATION = 'djangottmarket.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': 'localhost',
-        'PORT': 3306,
-        'NAME': 'djangottmarket_db',
-        'USER': 'root',
-        'PASSWORD': 'root',
+        'HOST': config('DB_HOST', 'localhost'),
+        'PORT': config('DB_PORT', 3306),
+        'NAME': config('DB_NAME', 'local_db_name'),
+        'USER': config('DB_USER', 'root'),
+        'PASSWORD': config('DB_PASS', 'root'),
     }
 }
 
@@ -143,8 +144,8 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_USE_TLS = 'True'
-EMAIL_PORT = '587'
-EMAIL_HOST_USER = 'danutsxd@gmail.com'
-EMAIL_HOST_PASSWORD = 'kiukifxrvogdjjug'
+EMAIL_HOST = config('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_HOST_USER = config('EMAIL_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_USER')
+EMAIL_PORT = config('EMAIL_PORT', 587)
+EMAIL_USE_TLS = config('EMAIL_TLS', True)

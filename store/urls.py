@@ -15,6 +15,8 @@ from store.views import (
     order_history,
     view_order,
     contact,
+    about,
+    on_delivery,
 )
 
 
@@ -36,5 +38,7 @@ urlpatterns = [
     path('order_details/', view=order_history, name='order_history'),
     path('order/<int:order_id>', view=view_order, name='order_detail'),
     path('contact/', view=contact, name='contact'),
+    path('about/', view=about, name='about'),
+    path('on_delivery/', view=on_delivery, name='on_delivery')
 ]
 

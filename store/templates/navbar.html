@@ -13,13 +13,14 @@
             </div>
         </li>
         <li class="nav-item"><a class="nav-link text-light text-uppercase font-weight-bold px-3" href="{% url 'contact' %}">Contact</a></li>
-        <li class="nav-item"><a class="nav-link text-light text-uppercase font-weight-bold px-3" href="">About</a></li>
+        <li class="nav-item"><a class="nav-link text-light text-uppercase font-weight-bold px-3" href="{% url 'about' %}">About</a></li>
         {% if request.user.is_authenticated and request.user.first_name %}
             <li class="nav-item dropdown" >
                 <a class="nav-link text-light text-uppercase font-weight-bold px-3 dropdown-toggle" data-toggle="dropdown">
                     Welcome, {{ request.user.first_name }} <i class="fas fa-user circle"></i>
                 </a>
                 <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{% url 'profile_view' %}">View Profile</a>
                     <a class="dropdown-item" href="{% url 'order_history' %}">Order History</a>
                 </div>
             </li>

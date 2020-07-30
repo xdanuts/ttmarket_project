@@ -107,9 +107,15 @@ Cart
                         data-zip-code="true">
                     </script>
                 </form>
+                <a href="{% url 'on_delivery' %}" style="text-decoration: none;">
+                    <button type="button" class="btn btn-lg btn-block bg-success text-white">
+                        Pay on Delivery
+                    </button>
+                </a>
+                <hr>
                 <a href="{% url 'home' %}" style="text-decoration: none;">
                     <button type="button" class="btn btn-lg btn-block bg-dark text-white">
-                        Continue Shopping
+                        Continue Shopping →
                     </button>
                 </a>
             </div>

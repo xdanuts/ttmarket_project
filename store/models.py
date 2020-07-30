@@ -121,11 +121,11 @@ class Order(models.Model):
     billingCity = models.CharField(max_length=250, blank=True)
     billingPostcode = models.CharField(max_length=250, blank=True)
     billingCountry = models.CharField(max_length=250, blank=True)
-    shippingName = models.CharField(max_length=250, blank=True)
-    shippingAddress1 = models.CharField(max_length=250, blank=True)
-    shippingCity = models.CharField(max_length=250, blank=True)
-    shippingPostcode = models.CharField(max_length=250, blank=True)
-    shippingCountry = models.CharField(max_length=250, blank=True)
+    shippingName = models.CharField(max_length=250, blank=True, verbose_name='Name')
+    shippingAddress1 = models.CharField(max_length=250, blank=True, verbose_name='Address')
+    shippingCity = models.CharField(max_length=250, blank=True, verbose_name='City')
+    shippingPostcode = models.CharField(max_length=250, blank=True, verbose_name='Post Code')
+    shippingCountry = models.CharField(max_length=250, blank=True, verbose_name='Country')
 
     class Meta:
         db_table = 'Order'

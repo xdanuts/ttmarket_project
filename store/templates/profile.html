@@ -1,4 +1,15 @@
-<p>You are authenticated as ..</p>
-<p>{{ user.first_name }}</p>
-<p>{{ user.last_name }}</p>
-<p>{{ user.email_name }}</p>
+{% extends 'base.html' %}
+{% load static %}
+{% block title%}
+Order Details
+{% endblock %}
+{% block content %}
+<div class="container" style="text-align: center;">
+    <hr>
+    <h5>You are authenticated as ..</h5>
+    <hr>
+    <p>{{ user.first_name }}</p>
+    <p>{{ user.last_name }}</p>
+    <p>{{ user.email }}</p>
+</div>
+{% endblock %}

@@ -6,7 +6,7 @@ import stripe
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.auth import login, authenticate, logout
-from store.forms import LoginForm, MyUserCreationForm, ContactForm
+from store.forms import LoginForm, MyUserCreationForm, ContactForm, DeliveryForm
 from django.contrib.auth.decorators import login_required
 from django.template.loader import get_template
 from django.core.mail import EmailMessage
@@ -159,7 +159,14 @@ def cart_detail(request, total=0, counter=0, cart_items=None):
         except stripe.error.CardError as e:
             return False, e
 
-    return render(request, 'cart.html', dict(cart_items=cart_items, total=total, counter=counter, data_key=data_key, stripe_total=stripe_total, description=description))
+    return render(request, 'cart.html', dict(
+        cart_items=cart_items,
+        total=total,
+        counter=counter,
+        data_key=data_key,
+        stripe_total=stripe_total,
+        description=description
+    ))
 
 
 def cart_remove(request, product_id):
@@ -213,8 +220,8 @@ def signin_view(request):
                 login(request, user)
                 # return HttpResponseRedirect(reverse('profile_view'))
                 return redirect('home')
-            # else:
-            #     return redirect('signup_view')
+            else:
+                return redirect('signup_view')
 
     else:
         form = LoginForm()
@@ -283,7 +290,11 @@ def contact(request):
             message = form.cleaned_data.get('message')
             name = form.cleaned_data.get('name')
 
-            message_format = "{0} has sent you a new message:\n\n{1}".format(name, message)
+            message_format = '{0} with e-mail address "{1}" has sent you a new message:\n\n{2}'.format(
+                name,
+                from_email,
+                message
+            )
 
             msg = EmailMessage(
                        subject,
@@ -300,3 +311,65 @@ def contact(request):
         form = ContactForm()
 
     return render(request, 'contact.html', {'form': form})
+
+
+def about(request):
+    return render(request, 'about.html')
+
+
+def on_delivery(request, total=0):
+    cart = Cart.objects.get(cart_id=_cart_id(request))
+    cart_items = CartItem.objects.filter(cart=cart, active=True)
+    for cart_item in cart_items:
+        total += (cart_item.product.price * cart_item.quantity)
+        names = cart_item.product.name
+        quantities = cart_item.quantity
+
+    if request.method == 'POST':
+        form = DeliveryForm(request.POST)
+        if form.is_valid():
+            emailAddress = form.cleaned_data.get('emailAddress')
+            shippingName = form.cleaned_data.get('shippingName')
+            shippingAddress1 = form.cleaned_data.get('shippingAddress1')
+            shippingCity = form.cleaned_data.get('shippingCity')
+            shippingPostcode = form.cleaned_data.get('shippingPostcode')
+            shippingCountry = form.cleaned_data.get('shippingCountry')
+            phone_number = form.cleaned_data.get('phone_number')
+
+            subject = "A new order has been placed."
+            message_format = "{0} placed an order! Check details below:\n\n" \
+                             "Name: {1}\n" \
+                             "City: {2}\n" \
+                             "Zip Code: {3}\n" \
+                             "Country: {4}\n" \
+                             "Phone Number: {5}" \
+                             "\n\nReceived from {6}." \
+                             "\n\nCart details:\n{7}" \
+                             "\nQuantity: {8}".format(
+
+                shippingName,
+                shippingAddress1,
+                shippingCity,
+                shippingPostcode,
+                shippingCountry,
+                phone_number,
+                emailAddress,
+                names,
+                quantities
+            )
+
+            msg = EmailMessage(
+                    subject,
+                    message_format,
+                    to=[settings.EMAIL_HOST_USER],
+                    from_email=emailAddress
+                )
+
+            msg.send()
+
+            return render(request, 'delivery_success.html')
+
+    else:
+        form = DeliveryForm()
+
+    return render(request, 'on_delivery.html', {'form': form, 'cart_items': cart_items, 'total': total})

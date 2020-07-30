@@ -1,5 +1,5 @@
 from django import forms
-from store.models import MyUser
+from store.models import MyUser, Order
 from django.contrib.auth.forms import UserCreationForm
 
 
@@ -25,3 +25,29 @@ class ContactForm(forms.Form):
         help_text='Write here your message!'
     )
 
+
+class DeliveryForm(forms.ModelForm):
+    phone_number = forms.CharField()
+
+    class Meta:
+        model = Order
+        fields = [
+            'emailAddress',
+            'shippingName',
+            'shippingAddress1',
+            'shippingCity',
+            'shippingPostcode',
+            'shippingCountry'
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super(DeliveryForm, self).__init__(*args, **kwargs)
+        self.fields['emailAddress'].required = True
+        self.fields['shippingName'].required = True
+        self.fields['shippingAddress1'].required = True
+        self.fields['shippingCity'].required = True
+        self.fields['shippingPostcode'].required = True
+        self.fields['shippingCountry'].required = True
+
+    def save(self, commit=True):
+        return super(DeliveryForm, self).save(commit=commit)

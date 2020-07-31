@@ -6,7 +6,25 @@ from django.contrib.auth.forms import UserCreationForm
 class MyUserCreationForm(UserCreationForm):
     class Meta:
         model = MyUser
-        fields = ['email', 'first_name', 'last_name', 'password1', 'password2']
+        fields = ['email', 'first_name', 'last_name']
+
+    password1 = None
+    password2 = None
+
+    def clean_password2(self):
+        pass
+
+    def _post_clean(self):
+        pass
+
+    def save(self, commit=True):
+        email = self.cleaned_data['email']
+        first_name = self.cleaned_data['first_name']
+        last_name = self.cleaned_data['last_name']
+        user = MyUser.objects.create_user(email, first_name, last_name)
+        user.save()
+
+        return user
 
 
 class LoginForm(forms.Form):

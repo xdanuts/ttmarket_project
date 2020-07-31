@@ -9,6 +9,7 @@ from django.contrib.auth import login, authenticate, logout
 from store.forms import LoginForm, MyUserCreationForm, ContactForm, DeliveryForm
 from django.contrib.auth.decorators import login_required
 from django.template.loader import get_template
+from django.contrib.sites.models import Site
 from django.core.mail import EmailMessage
 
 # Create your views here.
@@ -208,6 +209,8 @@ def signup_view(request):
 
 
 def signin_view(request):
+    current_site = Site.objects.get_current()
+
     if request.method == 'POST':
         form = LoginForm(request.POST)
 
@@ -226,7 +229,10 @@ def signin_view(request):
     else:
         form = LoginForm()
 
-    return render(request, 'login.html', {'form': form})
+    return render(request, 'login.html', {
+        'host': current_site.domain,
+        'form': form
+    })
 
 
 def profile_view(request):
@@ -274,7 +280,12 @@ def send_email(order_id):
             'order_items': order_items,
         }
         message = get_template('email/email.html').render(order_information)
-        msg = EmailMessage(subject, message, to=to, from_email=from_email)
+        msg = EmailMessage(
+            subject,
+            message,
+            to=to,
+            from_email=from_email
+        )
         msg.content_subtype = 'html'
         msg.send()
     except IOError as e:

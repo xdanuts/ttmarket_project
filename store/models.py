@@ -2,25 +2,28 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
+from helpers.emails import send_register_email
 
 # Create your models here.
 
 
 class MyUserManager(BaseUserManager):
-    def create_user(self, email, password=None):
+    def create_user(self, email, first_name, last_name):
         if not email:
             raise ValueError('User must have an e-mail address.')
 
         user = self.model(
-            email=self.normalize_email(email)
+            email=self.normalize_email(email),
+            first_name=first_name,
+            last_name=last_name,
         )
-        user.set_password(password)
+
         user.save(using=self._db)
 
         return user
 
-    def create_superuser(self, email, password=None):
-        user = self.create_user(email, password=password)
+    def create_superuser(self, email, first_name, last_name):
+        user = self.create_user(email, first_name, last_name)
         user.is_superuser = True
         user.is_staff = True
         user.save(using=self._db)
@@ -33,7 +36,7 @@ class MyUser(AbstractUser):
     email = models.EmailField(_('email address'), unique=True, null=False, max_length=255)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['first_name', 'last_name']
 
     objects = MyUserManager()
 

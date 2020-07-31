@@ -139,3 +139,4 @@ cython_debug/
 .idea
 migrations
 media/
+django_logs.log

@@ -3,6 +3,8 @@ from store.models import MyUser, Product, Category, Order, OrderItem, Review
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
+from django import forms
+from helpers.emails import send_register_email
 
 admin.site.site_header = 'TTMarket Administration'
 admin.site.site_title = 'TTMarket'
@@ -12,7 +14,32 @@ admin.site.index_title = 'Admin Panel'
 class MyUserCreationForm(UserCreationForm):
     class Meta:
         model = MyUser
-        fields = ['email', 'password1', 'password2']
+        fields = ['email', 'first_name', 'last_name']
+
+    password1 = None
+    password2 = None
+
+    def clean_password2(self):
+        pass
+
+    def _post_clean(self):
+        pass
+
+    def save(self, commit=True):
+        user = super(forms.ModelForm, self).save(commit=False)
+
+        email = self.cleaned_data.get('email')
+        first_name = self.cleaned_data.get('first_name')
+        last_name = self.cleaned_data.get('last_name')
+
+        user.email = email
+        user.first_name = first_name
+        user.last_name = last_name
+
+        if commit:
+            user.save()
+
+        return user
 
 
 class MyUserChangeForm(UserChangeForm):
@@ -36,7 +63,7 @@ class MyUserAdmin(UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'password1', 'password2'),
+            'fields': ('first_name', 'last_name', 'email'),
         }),
     )
     list_display = ('email', 'first_name', 'last_name', 'is_staff')
@@ -73,6 +100,7 @@ class OrderItemAdmin(admin.TabularInline):
     readonly_fields = ['product', 'quantity', 'price']
     can_delete = False
     max_num = 0
+
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):

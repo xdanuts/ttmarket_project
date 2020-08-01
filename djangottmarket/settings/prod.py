@@ -26,3 +26,5 @@ LOGGING = {
         },
     },
 }
+
+STATIC_ROOT = 'static/'
